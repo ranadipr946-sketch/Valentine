@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Valentine Surprise ❤️</title>
+
+<style>
+    body {
+        margin: 0;
+        overflow: hidden;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #ff758c, #ff7eb3);
+        text-align: center;
+        color: white;
+    }
+
+    h1 {
+        margin-top: 18%;
+        font-size: 2.7em;
+        z-index: 2;
+        position: relative;
+    }
+
+    .btn {
+        padding: 14px 28px;
+        font-size: 20px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        position: fixed;
+        z-index: 3;
+    }
+
+    #yesBtn {
+        background: #ff2e63;
+        left: 42%;
+        bottom: 32%;
+    }
+
+    #noBtn {
+        background: #444;
+        position: absolute;
+    }
+
+    #message {
+        display: none;
+        font-size: 3em;
+        margin-top: 20%;
+    }
+
+    /* Floating hearts */
+    .heart {
+        position: fixed;
+        bottom: -10px;
+        font-size: 20px;
+        animation: floatUp linear infinite;
+        opacity: 0.7;
+    }
+
+    @keyframes floatUp {
+        to {
+            transform: translateY(-110vh);
+            opacity: 0;
+        }
+    }
+
+    canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+    }
+</style>
+</head>
+
+<body>
+
+<h1>Will you be my valentine Poulami? ❤️</h1>
+
+<button id="yesBtn" class="btn" onclick="celebrate()">Yes 💖</button>
+<button id="noBtn" class="btn">No 😢</button>
+
+<div id="message">YAYYYYY!!! ❤️🥰💍</div>
+<canvas id="confetti"></canvas>
+
+<script>
+/* -------------------- FLOATING HEARTS -------------------- */
+function createHeart() {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.innerHTML = "❤️";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.fontSize = (Math.random() * 20 + 15) + "px";
+    heart.style.animationDuration = (Math.random() * 3 + 3) + "s";
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 6000);
+}
+setInterval(createHeart, 250);
+
+/* -------------------- IMPOSSIBLE NO BUTTON 😈 -------------------- */
+const noBtn = document.getElementById("noBtn");
+
+function moveNoButton() {
+    const x = Math.random() * (window.innerWidth - 120);
+    const y = Math.random() * (window.innerHeight - 60);
+    noBtn.style.left = x + "px";
+    noBtn.style.top = y + "px";
+}
+
+// Runs away on mouse near
+document.addEventListener("mousemove", e => {
+    const rect = noBtn.getBoundingClientRect();
+    const dist = Math.hypot(e.clientX - rect.left, e.clientY - rect.top);
+    if (dist < 150) moveNoButton();
+});
+
+// Teleport if somehow hovered
+noBtn.addEventListener("mouseenter", moveNoButton);
+
+// Disable clicking 😈
+noBtn.addEventListener("click", e => {
+    e.preventDefault();
+    moveNoButton();
+});
+
+// Initial position
+moveNoButton();
+
+/* -------------------- CONFETTI 🎉 -------------------- */
+const canvas = document.getElementById("confetti");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let confettiPieces = [];
+
+function celebrate() {
+    document.querySelector("h1").style.display = "none";
+    document.getElementById("yesBtn").style.display = "none";
+    document.getElementById("noBtn").style.display = "none";
+    document.getElementById("message").style.display = "block";
+
+    for (let i = 0; i < 250; i++) {
+        confettiPieces.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height - canvas.height,
+            r: Math.random() * 6 + 2,
+            d: Math.random() * 50
+        });
+    }
+    requestAnimationFrame(drawConfetti);
+}
+
+function drawConfetti() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "white";
+
+    confettiPieces.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, false);
+        ctx.fill();
+    });
+
+    updateConfetti();
+    requestAnimationFrame(drawConfetti);
+}
+
+function updateConfetti() {
+    confettiPieces.forEach(p => {
+        p.y += Math.cos(p.d) + 3;
+        p.x += Math.sin(p.d);
+
+        if (p.y > canvas.height) {
+            p.y = -10;
+            p.x = Math.random() * canvas.width;
+        }
+    });
+}
+</script>
+
+</body>
+</html>
